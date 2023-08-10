@@ -2,16 +2,47 @@ const express = require('express')
 
 const mongoose = require('mongoose')
 
+const AquaticAnimal = require('./models/aquaticAnimalModel')
+
 const app = express();
 
+// Middleware
+// This helps our application to understand json
+app.use(express.json())
+
+
 // Routes
-app.get('/', (req, res) => {
-    res.send("Hello Node API")
+
+// Route for saving/creating data in the database
+app.post('/aquatic-animal', async (req, res) => {
+    try {
+        const aquaAnimal = await AquaticAnimal.create(req.body)
+        res.status(200).json(aquaAnimal)
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// Route for fetching data from the database
+app.get('/all-aquatic-animals', async(req, res) => {
+    try {
+        
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({message: error.message})
+    }
 })
 
 const PORT = process.env.PORT || 3000
 
-mongoose.connect("mongodb+srv://admin:Sarthak4120@cluster1.oguoh5g.mongodb.net/", {
+// Personal Mongo Compass
+// mongodb+srv://admin:Sarthak4120@cluster1.oguoh5g.mongodb.net/
+
+// Office Mongo Compass 
+// mongodb://localhost:27017/
+
+mongoose.connect("mongodb://localhost:27017/aquapedia", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
