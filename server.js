@@ -10,6 +10,7 @@ const app = express();
 // This helps our application to understand json
 app.use(express.json())
 
+app.use(express.urlencoded({extended: true}))
 
 // Routes
 
@@ -32,7 +33,7 @@ app.get('/all-aquatic-animals', async(req, res) => {
     } catch (error) {
         console.log(error.message);
         res.status(500).json({message: error.message})
-    }
+    }   
 })
 
 // * Route for fetching data from the database using an ID
@@ -46,6 +47,40 @@ app.get('/aquatic-animal/:id', async(req, res) => {
     }
 })
 
+
+// * Route for updating data from the database using an ID
+app.put('/aquatic-animal/:id', async (req, res) => {
+    try {
+        const {id} = req.params;
+        const aqua_animal = await AquaticAnimal.findByIdAndUpdate(id, req.body);
+        // We cannot find product in the DB
+        if(!aqua_animal){
+            return res.status(404).json({message: `Cannot find any aquatic animal with ID: ${id}`})
+        }
+        const updatedAquaAnimal = await AquaticAnimal.findById(id);
+        res.status(200).json(updatedAquaAnimal);
+        
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// * Route for deleting data from the database using an ID
+app.delete('/aquatic-animal/:id', async (req, res) => {
+    try {
+        const {id} = req.params;
+        const aqua_animal = await AquaticAnimal.findByIdAndDelete(id);
+
+        if(!aqua_animal){
+            return res.status(404).json({message: `Cannot find any aquatic animal with ID: ${id}`})
+        }
+        res.status(200).json(aqua_animal)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+});
+
+
 const PORT = process.env.PORT || 3000
 
 // Personal Mongo Compass
@@ -53,7 +88,9 @@ const PORT = process.env.PORT || 3000
 
 // Office Mongo Compass 
 // mongodb://localhost:27017/
-mongoose.connect("mongodb://localhost:27017/aquapedia", {
+// mongodb://localhost:27017/aquapedia
+
+mongoose.connect("mongodb+srv://admin:Sarthak4120@cluster1.oguoh5g.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
