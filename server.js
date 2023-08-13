@@ -3,6 +3,8 @@ const express = require('express')
 
 const mongoose = require('mongoose')
 
+const errorMiddleware = require('./middleware/errormd');
+
 const pageRoutes = require('./routes/pageRoutes');
 
 const app = express();
@@ -16,7 +18,14 @@ app.use(express.json())
 
 app.use(express.urlencoded({extended: true}))
 
+
 app.use('/api', pageRoutes);
+
+app.get('/', (req, res) => {
+    res.send('Hello Node API');
+})
+
+app.use(errorMiddleware);
 
 // Personal Mongo Compass
 // mongodb+srv://admin:Sarthak4120@cluster1.oguoh5g.mongodb.net/
